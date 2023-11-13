@@ -1,3 +1,11 @@
+/*html {
+  cursor: default;
+  overflow: hidden;
+  background: #000;
+  user-select: none;
+}
+*/
+
 .MMM-FamilyWeekCalendar .symbol {
   padding-left: 0;
   padding-right: 10px;
@@ -43,16 +51,18 @@
   flex-grow: 1;
   width: 40%;
   padding: 4px 0;
+  text-align: center;
 }
 
 .MMM-FamilyWeekCalendar th:first-child {
   flex-grow: 0;
-  width: 40px!important;
+  width: 500px!important;
 }
 
 .MMM-FamilyWeekCalendar td {
   flex-grow: 1;
   border-top: 1px solid #666;
+  border-left: 1px solid #666;
   width: 40%;
   text-align: left;
   padding: 4px 0;
@@ -61,7 +71,7 @@
 .MMM-FamilyWeekCalendar td:first-child {
   flex-grow: 0;
   border-top: 1px solid #666;
-  width: 40px!important;
+  width: 500px!important;
   padding: 4px 0;
 }
 .MMM-FamilyWeekCalendar .location {

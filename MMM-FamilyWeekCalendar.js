@@ -12,10 +12,10 @@ Module.register("MMM-FamilyWeekCalendar", {
 
 	// Define module defaults
 	defaults: {
-		maximumEntries: 20, // Total Maximum Entries
-		maximumNumberOfDays: 7,
+		maximumEntries: 100, // Total Maximum Entries
+		maximumNumberOfDays: 30,
 		showLocation: false,
-		displayRepeatingCountTitle: false,
+		displayRepeatingCountTitle: true,
 		defaultRepeatingCountTitle: "",
 		maxTitleLength: 30,
 		wrapEvents: false, // wrap events to multiple lines breaking at maxTitleLength
@@ -28,7 +28,7 @@ Module.register("MMM-FamilyWeekCalendar", {
 		dateFormat: "MMM Do",
 		dateEndFormat: "LT",
 		fullDayEventDateFormat: "MMM Do",
-		showEnd: false,
+		showEnd: true,
 		getRelative: 6,
 		fadePoint: 0.25, // Start on 1/4th of the list.
 		hidePrivate: false,
@@ -189,7 +189,7 @@ Module.register("MMM-FamilyWeekCalendar", {
 				location: event.location,
 				title: event.title,
 				today: event.today,
-				url: event.url
+				url: event.url				
 			};
 
 			/* Multi day events  */
@@ -236,8 +236,11 @@ Module.register("MMM-FamilyWeekCalendar", {
 		}
 		/* Create Table Header */
 		var tableHeadRow = document.createElement("tr");
-		tableHeadRow.appendChild(document.createElement("th"));
-		var columns = {day: ""};
+		//tableHeadRow.appendChild(document.createElement("th"));
+		var columns = {};
+		let col = document.createElement("th");
+		col.innerHTML = "Tag";
+		tableHeadRow.appendChild(col);
 		for(let calendar of this.config.calendars){
 			columns[calendar.url] = [];
 			let col = document.createElement("th");
@@ -257,8 +260,9 @@ Module.register("MMM-FamilyWeekCalendar", {
 				row.style.opacity = 1 - (1 / fadeSteps * currentFadeStep);
 			}
 
+			// Wochentag & Kalender tag in die 1. Spalte
 			const dayLabel = document.createElement("td");
-			dayLabel.innerHTML = moment(day).format("dd");
+			dayLabel.innerHTML = moment(day).format("WW dd DD.MM.");
 			row.appendChild(dayLabel);
 
 			/* one column for each calendar */
@@ -277,7 +281,16 @@ Module.register("MMM-FamilyWeekCalendar", {
 
 					const title = document.createElement("span");
 					title.className = `title ${this.titleClassForUrl(event.url)}`;
+
 					title.innerHTML =  this.titleTransform(event.title);
+
+					// bei geburtstagen (jjjj) das alter ausrechnen und anhängen
+					let titleHasYearNumbers = /\d{4}/.test(event.title);
+					if (titleHasYearNumbers){
+						let extractedYear = event.title.match(/\d+/);
+						age = moment(day).format("YYYY")-extractedYear
+						title.innerHTML = title.innerHTML + " " + age
+					}
 
 					if(this.config.showLocation && event.location){
 						const location = document.createElement("span");
@@ -367,9 +380,9 @@ Module.register("MMM-FamilyWeekCalendar", {
 						continue;
 					}
 				}
-				if(this.listContainsEvent(events,event)){
+			/*	if(this.listContainsEvent(events,event)){
 					continue;
-				}
+				}*/
 				event.url = c;
 				event.today = event.startDate >= today && event.startDate < (today + 24 * 60 * 60 * 1000);
 
@@ -410,6 +423,8 @@ Module.register("MMM-FamilyWeekCalendar", {
 		events.sort(function (a, b) {
 			return a.startDate - b.startDate;
 		});
+
+		/*Log.warn("Es gibt "+ events.count + "events in der liste")*/
 		return events.slice(0, this.config.maximumEntries);
 	},
 
